@@ -21,7 +21,7 @@ python drive_rover.py
 Then launch the simulator and choose "Autonomous Mode".  
 
 <img
-  src="/Downloads/5c095113-f7d9-4353-b5cd-d59736d629d3.jfif"
-  alt="Alt text"
+  src="/Downloads/5c095113-f7d9-4353-b5cd-d59736d629d3.jpg"
   title="Screenshot for Phase 1"
   style="display: inline-block; margin: 0 auto; max-width: 300px">
+
