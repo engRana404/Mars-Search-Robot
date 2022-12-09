@@ -28,18 +28,6 @@ Then launch the simulator and choose "Autonomous Mode".
 
 ## Contributors
 
-<a href="https://github.com/engRana404">
-  <img src="https://avatars.githubusercontent.com/u/70284270?v=4" width="150" height="150">
-</a>
-
-<a href="https://github.com/OmniaAhmed292">
-  <img src="https://github.com/OmniaAhmed292.png?size=50" width="150" height="150">
-</a>
-
-<a href="https://github.com/Tasneem849">
-  <img src="https://avatars.githubusercontent.com/u/92854521?v=4" width="150" height="150">
-</a>
-
-<a href="https://github.com/Menna-Elkhwass">
-  <img src="https://avatars.githubusercontent.com/u/105253678?v=4" width="150" height="150">
+<a href = "https://github.com/engRana404/Mars-Search-Robot/graphs/contributors">
+  <img src = "https://contrib.rocks/image?repo=engRana404/Mars-Search-Robot"/>
 </a>
