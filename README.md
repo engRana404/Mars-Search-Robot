@@ -1,5 +1,9 @@
 [image_0]: ./misc/rover_image.jpg
-  
+
+## Aim of the project
+
+In this project, we’ll do computer vision for robotics where we are going to build a Sample & Return Rover in simulation by controlling the robot from images streamed from a camera mounted on the robot.
+###### The project aims to do autonomous mapping and navigation given an initial map of the environment.
 
 ## The Simulator
  
@@ -7,7 +11,7 @@ You can test out the simulator by opening it up and choosing "Training Mode".  U
 
 
 ## Data Analysis
-Included in the IPython notebook called `NoteBook.ipynb` are the functions from the lesson for performing the various steps of this project.
+Included in the IPython notebook called <code>[NoteBook.ipynb](https://github.com/engRana404/Mars-Search-Robot/blob/main/NoteBook.ipynb)</code> are the functions from the lesson for performing the various steps of this project.
 
 ## Navigating Autonomously
 The file called `drive_rover.py` is what you will use to navigate the environment in autonomous mode.  This script calls functions from within `perception.py` and `decision.py`.  The functions defined in the IPython notebook are all included in`perception.py` and it's your job to fill in the function called `perception_step()` with the appropriate processing steps and update the rover map. `decision.py` includes another function called `decision_step()`, which includes an example of a conditional statement you could use to navigate autonomously.  Here you should implement other conditionals to make driving decisions based on the rover's state and the results of the `perception_step()` analysis.
