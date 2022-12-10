@@ -1,5 +1,7 @@
 [image_0]: ./misc/rover_image.jpg
 
+<h1 align="center">NASA Mars Sample & Return Rover</h1>
+
 ## Aim of the project
 
 In this project, we’ll do computer vision for robotics where we are going to build a Sample & Return Rover in simulation by controlling the robot from images streamed from a camera mounted on the robot.
