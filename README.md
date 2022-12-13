@@ -27,7 +27,7 @@ python drive_rover.py
 Then launch the simulator and choose "Autonomous Mode".  
 
 <img
-  src="https://github.com/engRana404/Mars-Search-Robot/blob/main/Pictures/Screenshot%20(1837).png" width = 600 height = 450
+  src="https://github.com/engRana404/Mars-Search-Robot/blob/main/Pictures/environment.png" width = 600 height = 450
   title="Screenshot for Phase 1"
   style="display: inline-block; margin: 0 auto; max-width: 300px">
 
