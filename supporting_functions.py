@@ -63,7 +63,12 @@ def update_rover(Rover, data):
     # Get the current image from the center camera of the rover
     imgString = data["image"]
     image = Image.open(BytesIO(base64.b64decode(imgString)))
+    ############################################################################
     Rover.img = np.asarray(image)
+    Rover.is_close = data["near_sample"]
+    Rover.is_picking_up = data["picking_up"]
+    print("Near Objective ", Rover.is_close)
+    print("Picking Up", Rover.is_picking_up)
 
     # Return updated Rover and separate image for optional saving
     return Rover, image
@@ -107,13 +112,26 @@ def create_output_images(Rover):
             test_rock_y = Rover.samples_pos[1][idx]
             rock_sample_dists = np.sqrt((test_rock_x - rock_world_pos[1])**2 +
                                         (test_rock_y - rock_world_pos[0])**2)
+            
+            Rover.rock_dist = np.min(rock_sample_dists)
+            print("Rock at distance", Rover.rock_dist)
+            print("   ")
+            
             # If rocks were detected within 3 meters of known sample positions
             # consider it a success and plot the location of the known
             # sample on the map
             if np.min(rock_sample_dists) < 3:
+                print("Rock Located")
                 samples_located += 1
                 map_add[test_rock_y-rock_size:test_rock_y+rock_size,
                         test_rock_x-rock_size:test_rock_x+rock_size, :] = 255
+                Rover.rockatangle = math.degrees(math.atan(test_rock_x/test_rock_y))
+                print("Rock at theta", Rover.rockatangle)
+                print(test_rock_x, test_rock_y)
+
+            if Rover.mode == 'located':
+                  #Rover.rockatangle = 
+                Rover.steer_angle = Rover.rock_angles                
 
     # Calculate some statistics on the map results
     # First get the total number of pixels in the navigable terrain map
@@ -159,5 +177,13 @@ def create_output_images(Rover):
     buff = BytesIO()
     pil_img.save(buff, format="JPEG")
     encoded_string2 = base64.b64encode(buff.getvalue()).decode("utf-8")
+    
+    Rover.is_located = str(samples_located)
+    print("Located ", Rover.is_located)
+
+    if Rover.is_located == 1:
+        Rover.mode = 'located'
+    else:
+        Rover.mode = 'forward'
 
     return encoded_string1, encoded_string2

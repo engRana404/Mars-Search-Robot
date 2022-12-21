@@ -20,14 +20,16 @@ def color_thresh(img, rgb_thresh=(160, 160, 160)):
 def find_obstacle(img, obs_thresh=(160, 160, 160)):
     color_select = np.zeros_like(img[:,:,0])
     obs = (img[:,:,0] < obs_thresh[0]) \
-    & (img[:,:,1] < obs_thresh[1]) \
-    & (img[:,:,2] < obs_thresh[2])
+    | (img[:,:,1] < obs_thresh[1]) \
+    | (img[:,:,2] < obs_thresh[2])
     color_select[obs] = 1
     return color_select
 
 def find_rock(img, yellow_thresh=(100, 100, 20)):
     color_select = np.zeros_like(img[:,:,0])
-    rock = (img[:,:,0] > yellow_thresh[0]) & (img[:,:,1] > yellow_thresh[1]) & (img[:,:,2] < yellow_thresh[2])
+    rock = (img[:,:,0] > yellow_thresh[0]) \
+    & (img[:,:,1] > yellow_thresh[1]) \
+    & (img[:,:,2] < yellow_thresh[2])
     color_select[rock] = 1
     return color_select
 
@@ -172,5 +174,5 @@ def perception_step(Rover):
         # Rover.nav_angles = rover_centric_angles
     Rover.nav_dists = dist 
     Rover.nav_angles = angles 
-    
+    _, Rover.rock_angles = to_polar_coords(rxpix, rypix)
     return Rover
