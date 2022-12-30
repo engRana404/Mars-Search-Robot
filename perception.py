@@ -91,6 +91,11 @@ def perspect_transform(img, src, dst):
     warped = cv2.warpPerspective(img, M, (img.shape[1], img.shape[0]))# keep same size as input image    
     return warped
 
+# Apply the above functions in succession
+def calc_forward_dist(path_dists, path_angles):
+	abs_angles = np.absolute(path_angles / sum(path_angles))
+	idx = np.abs(abs_angles).argmin()
+	return path_dists[idx]
 
 # Apply the above functions in succession and update the Rover state accordingly
 def perception_step(Rover):
@@ -161,18 +166,34 @@ def perception_step(Rover):
         # Example: Rover.worldmap[obstacle_y_world, obstacle_x_world, 0] += 1
         #          Rover.worldmap[rock_y_world, rock_x_world, 1] += 1
         #          Rover.worldmap[navigable_y_world, navigable_x_world, 2] += 1
+
+    if (len(angles) > 0):
+        Rover.dist_to_obstacle = calc_forward_dist(dist, angles)        
         
     if ((Rover.pitch < 1 or Rover.pitch > 359) and (Rover.roll < 1 or Rover.roll > 359)):
-        Rover.worldmap[obstacle_y_world, obstacle_x_world, 0] += 1
-        Rover.worldmap[y_world, x_world, 0] = 0
-        Rover.worldmap[rock_y_world, rock_x_world, 1] += 1
-        Rover.worldmap[y_world,x_world, 2] += 1           
+        Rover.worldmap[obstacle_y_world, obstacle_x_world, 0] = 255
+        Rover.worldmap[rock_y_world, rock_x_world, 1] = 255
+        Rover.worldmap[y_world, x_world, 2] = 255
+		# remove overlap mesurements
+        nav_pix = Rover.worldmap[:, :, 2] > 0
+        Rover.worldmap[nav_pix, 0] = 0
+		# clip to avoid overflow
+        Rover.worldmap = np.clip(Rover.worldmap, 0, 255)  
     
     # 8) Convert rover-centric pixel positions to polar coordinates
     # Update Rover pixel distances and angles
         # Rover.nav_dists = rover_centric_pixel_distances
         # Rover.nav_angles = rover_centric_angles
+    nav_angles_left = angles[angles > 0]
+    nav_angles_right = angles[angles < 0] 
+    
     Rover.nav_dists = dist 
-    Rover.nav_angles = angles 
-    _, Rover.rock_angles = to_polar_coords(rxpix, rypix)
+    Rover.nav_angles = angles
+    
+    Rover.nav_angles_right = nav_angles_right
+    Rover.nav_angles_left = nav_angles_left
+    
+    Rover.nav_area = warped_img.sum()
+    
+    Rover.rock_dists, Rover.rock_angles = to_polar_coords(rxpix, rypix)
     return Rover

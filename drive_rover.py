@@ -52,7 +52,13 @@ class RoverState():
         self.nav_angles = None # Angles of navigable terrain pixels
         self.nav_dists = None # Distances of navigable terrain pixels
         
+        self.rock_dists = None
         self.rock_angles = None
+        
+        self.nav_angles_left = None  # Nav terrain angles left of rover heading
+        self.nav_angles_right = None  # Nav terrain angles right of rover heading
+        
+        self.nav_area = 0
         
         self.ground_truth = ground_truth_3d # Ground truth worldmap
         self.mode = 'forward' # Current mode (can be forward or stop)
@@ -86,6 +92,8 @@ class RoverState():
         self.is_collected = False
         self.is_close = False
         self.is_picking_up = False
+        
+        self.dist_to_obstacle = 0
 
         self.rock_dist = 0
         
