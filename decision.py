@@ -1,12 +1,37 @@
 import numpy as np
 
 def decision_step(Rover):
-    if Rover.nav_angles is not None:
+   # Check if there are rocks
+    if Rover.rock_angles is not None and len(Rover.rock_angles) > 0:
+        Rover.mode = 'forward'
+        Rover.steer = np.clip(np.mean(Rover.rock_angles * 180/np.pi), -15, 15)
+        # Move towards the rock slowly
+        if not Rover.near_sample:
+            if Rover.vel < Rover.max_vel/2:
+                Rover.brake = 0
+                Rover.throttle = 0.1
+            else:
+                Rover.throttle = 0
+                Rover.brake = 1
+        # Stop when close to a rock.
+        else:
+            Rover.throttle = 0
+            Rover.brake = Rover.brake_set
+
+    
+    elif Rover.nav_angles is not None:
         if Rover.mode == 'forward':
             if len(Rover.nav_angles) >= Rover.stop_forward:
                 if Rover.vel < Rover.max_vel:
                     # Set throttle value to throttle setting
-                    Rover.throttle = Rover.throttle_set
+                    if Rover.throttle != 0 and Rover.vel < 0.01:
+                        Rover.brake = 0
+                        Rover.mode = 'stuck'
+                    else:
+                        # Set throttle value to throttle setting
+                        Rover.throttle = Rover.throttle_set
+                        Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi), -10, 10)                        
+
                 else:  # Else coast
                     Rover.throttle = 0
 
@@ -21,16 +46,12 @@ def decision_step(Rover):
                     Rover.steer = 0
                     Rover.mode = 'change'
                     
-                if 650 > Rover.nav_area > 10:
+                if (650 > Rover.nav_area > 10) :
                     Rover.throttle = 0
                     Rover.brake = 10
                     Rover.steer = 0
-                    Rover.mode = 'stuck'    
-                if len(Rover.rock_dists) > 0 and np.min(Rover.rock_dists) < (5 * Rover.vel):
-                    Rover.mode = 'sampling'
-                    Rover.throttle = 0
-                    Rover.brake = 10
-                    Rover.steer = 0
+                    Rover.mode = 'stuck'  
+                
                 elif len(Rover.nav_angles) >= Rover.stop_forward:
 				# If mode is forward, navigable terrain looks good
 				# Except for start, if stopped means stuck.
@@ -42,14 +63,11 @@ def decision_step(Rover):
                         drive_angles = Rover.nav_angles
                         drive_distance = Rover.dist_to_obstacle
 
-					# Set throttle value to throttle setting
+				# Set throttle value to throttle setting
                     Rover.throttle = np.clip(drive_distance * 0.005 - Rover.vel * 0.2, 0, 2)
                     Rover.brake = 0
 				# Set steering to average angle clipped to the range +/- 15
                     Rover.steer = np.clip(np.mean(drive_angles * 180 / np.pi), -15, 15)
-
-                #Rover.brake = 0
-                #Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi), -10, 10)
 
                 #Rover.brake = 0
                 #Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi), -10, 10)
@@ -68,7 +86,9 @@ def decision_step(Rover):
             Rover.throttle = 0
             Rover.brake = 0
             if Rover.nav_area > 650:
-                Rover.mode = 'forward'        
+                Rover.mode = 'forward'  
+
+    
 
         elif Rover.mode == 'change':
             Rover.throttle = 0
@@ -104,14 +124,6 @@ def decision_step(Rover):
                 Rover.steer = -10
             elif len(Rover.rock_angles) < 20:
                 Rover.steer = 10
-        
-        elif Rover.mode == 'sampling':
-            if Rover.vel != 0:
-                Rover.brake = 10
-                if len(Rover.rock_dists) == 0:
-                    Rover.send_pickup = True
-                    Rover.mode = 'forward'
-
         # If we're already in "stop" mode then make different decisions
         elif Rover.mode == 'stop':
             # If we're in stop mode but still moving keep braking

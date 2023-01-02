@@ -93,9 +93,9 @@ def perspect_transform(img, src, dst):
 
 # Apply the above functions in succession
 def calc_forward_dist(path_dists, path_angles):
-	abs_angles = np.absolute(path_angles / sum(path_angles))
-	idx = np.abs(abs_angles).argmin()
-	return path_dists[idx]
+    abs_angles = np.absolute(path_angles / sum(path_angles))
+    idx = np.abs(abs_angles).argmin()
+    return path_dists[idx]
 
 # Apply the above functions in succession and update the Rover state accordingly
 def perception_step(Rover):
@@ -122,32 +122,36 @@ def perception_step(Rover):
     dst_x4, dst_y4 = (width/2 - dst_grid/2), (height-dst_grid-bottom_offset)
 
     src = np.float32([[src_x1, src_y1],
-                                [src_x2, src_y2],
-                                [src_x3, src_y3],
-                                [src_x4, src_y4]])
+                      [src_x2, src_y2],
+                      [src_x3, src_y3],
+                      [src_x4, src_y4]])
 
     dst = np.float32([[dst_x1, dst_y1],
-                                [dst_x2, dst_y2],
-                                [dst_x3, dst_y3],
-                                [dst_x4, dst_y4]])  
+                      [dst_x2, dst_y2],
+                      [dst_x3, dst_y3],
+                      [dst_x4, dst_y4]])  
     
     # 2) Apply perspective transform
+    
     warped_img = perspect_transform(Rover.img, src, dst)
     rocks = perspect_transform(find_rock(Rover.img), src, dst)
     obstacles = perspect_transform(find_obstacle(Rover.img), src, dst)
     
     # 3) Apply color threshold to identify navigable terrain/obstacles/rock samples
+    
     thresh_pixpts_pf = color_thresh(warped_img)
     
     # 4) Update Rover.vision_image (this will be displayed on left side of screen)
         # Example: Rover.vision_image[:,:,0] = obstacle color-thresholded binary image
         #          Rover.vision_image[:,:,1] = rock_sample color-thresholded binary image
         #          Rover.vision_image[:,:,2] = navigable terrain color-thresholded binary image
+        
     Rover.vision_image[:,:,2] = thresh_pixpts_pf * 175
     Rover.vision_image[:,:,0] = obstacles * 135
     Rover.vision_image[:,:,1] = rocks * 1
     
     # 5) Convert map image pixel values to rover-centric coords
+    
     x_pixpts_rf, y_pixpts_rf  = rover_coords(thresh_pixpts_pf)
     oxpix, oypix = rover_coords(obstacles)
     rxpix, rypix = rover_coords(rocks)    
@@ -156,8 +160,12 @@ def perception_step(Rover):
     
     # 6) Convert rover-centric pixel values to world coordinates
     #worldmap = np.zeros((200, 200))
+    
     worldmap = Rover.worldmap
-    scale = 10  # scale factor assumed between world and rover space pixels
+    
+    # scale factor assumed between world and rover space pixels
+    scale = 30  
+    
     obstacle_x_world, obstacle_y_world = pix_to_world(oxpix,oypix,Rover.pos[0],Rover.pos[1],Rover.yaw,worldmap.shape[0],scale)
     rock_x_world, rock_y_world = pix_to_world(rxpix,rypix,Rover.pos[0],Rover.pos[1],Rover.yaw,worldmap.shape[0],scale)    
     x_world, y_world = pix_to_world(x_pixpts_rf, y_pixpts_rf, Rover.pos[0],Rover.pos[1],Rover.yaw,worldmap.shape[0],scale)
@@ -171,13 +179,15 @@ def perception_step(Rover):
         Rover.dist_to_obstacle = calc_forward_dist(dist, angles)        
         
     if ((Rover.pitch < 1 or Rover.pitch > 359) and (Rover.roll < 1 or Rover.roll > 359)):
-        Rover.worldmap[obstacle_y_world, obstacle_x_world, 0] = 255
-        Rover.worldmap[rock_y_world, rock_x_world, 1] = 255
-        Rover.worldmap[y_world, x_world, 2] = 255
-		# remove overlap mesurements
+        Rover.worldmap[obstacle_y_world, obstacle_x_world, 0] += 255
+        Rover.worldmap[rock_y_world, rock_x_world, 1] += 255
+        Rover.worldmap[y_world, x_world, 2] += 255
+
+        # remove overlap mesurements
         nav_pix = Rover.worldmap[:, :, 2] > 0
         Rover.worldmap[nav_pix, 0] = 0
-		# clip to avoid overflow
+
+        # clip to avoid overflow
         Rover.worldmap = np.clip(Rover.worldmap, 0, 255)  
     
     # 8) Convert rover-centric pixel positions to polar coordinates
@@ -196,4 +206,5 @@ def perception_step(Rover):
     Rover.nav_area = warped_img.sum()
     
     Rover.rock_dists, Rover.rock_angles = to_polar_coords(rxpix, rypix)
+    
     return Rover
