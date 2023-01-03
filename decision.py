@@ -122,11 +122,6 @@ def decision_step(Rover):
                 Rover.steer = 20
                 Rover.mode = 'forward'
 
-        elif Rover.mode == 'collect':
-            if len(Rover.rock_angles) > 20:
-                Rover.steer = -10
-            elif len(Rover.rock_angles) < 20:
-                Rover.steer = 10
         # If we're already in "stop" mode then make different decisions
         elif Rover.mode == 'stop':
             # If we're in stop mode but still moving keep braking
