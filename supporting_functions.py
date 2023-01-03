@@ -170,8 +170,8 @@ def create_output_images(Rover):
                     (2, 145),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.37, (255, 255, 0), 1)
 
-    if Rover.mode == "collect":
-        cv2.putText(map_add, "collect",
+    if Rover.mode == "change":
+        cv2.putText(map_add, "change",
                     (2, 145),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.37, (255, 255, 0), 1)
 
