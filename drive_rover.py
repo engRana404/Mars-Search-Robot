@@ -60,6 +60,8 @@ class RoverState():
         
         self.nav_area = 0
         
+        self.stop_dir = [-1,1]
+        
         self.ground_truth = ground_truth_3d # Ground truth worldmap
         self.mode = 'forward' # Current mode (can be forward or stop)
         self.throttle_set = 0.3 # Throttle setting when accelerating

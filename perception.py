@@ -197,6 +197,14 @@ def perception_step(Rover):
     nav_angles_left = angles[angles > 0]
     nav_angles_right = angles[angles < 0] 
     
+    mean_test_left_angle = np.mean(nav_angles_left)
+    mean_dir = np.mean(angles)
+    mean_test_right_angle = np.mean(nav_angles_right)
+
+    new_angle = (mean_test_left_angle + mean_dir) / 2
+    
+    
+    
     Rover.nav_dists = dist 
     Rover.nav_angles = angles
     
