@@ -95,7 +95,7 @@ def decision_step(Rover):
             Rover.throttle = 0
             Rover.brake = Rover.brake_set
             Rover.steer = 0
-            if len(Rover.nav_angles_left) >= len(Rover.nav_angles_left):
+            if len(Rover.nav_angles_left) >= len(Rover.nav_angles_right):
                 Rover.throttle = 0
                 Rover.brake = 0
                 Rover.steer = -90
@@ -113,7 +113,7 @@ def decision_step(Rover):
 
 
         elif Rover.mode == 'loop':
-            if len(Rover.nav_angles_left) > len(Rover.nav_angles_left):
+            if len(Rover.nav_angles_left) > len(Rover.nav_angles_right):
                 Rover.brake = 0
                 Rover.steer = -20
                 Rover.mode = 'forward'
